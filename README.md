@@ -1,4 +1,5 @@
 # AbleBrige
+<<<<<<< HEAD
 
 This template should help get you started developing with Vue 3 in Vite.
 
@@ -71,3 +72,6 @@ npm run test:e2e -- --debug
 ```sh
 npm run lint
 ```
+=======
+web tech mid term project designed to improve our skill with using vue js creating web pages
+>>>>>>> 419cc38c1c6391e7e7d4e2ddab377d619a325e82
