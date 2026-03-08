@@ -1,9 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Problem from '../views/Problem.vue'
+import Auth from '../views/Auth.vue'
 
 const routes = [
 	{ path: '/', redirect: '/problem' },
-	{ path: '/problem', name: 'Problem', component: Problem }
+	{ path: '/problem', name: 'Problem', component: Problem },
+	{ path: '/auth', name: 'Auth', component: Auth }
 ]
 
 const router = createRouter({

@@ -28,6 +28,10 @@ export default {
         "light-green-text": "#94A3A8",
         "card-bg": "#164A3F",
       },
+      fontFamily: {
+        fraunces: ['Fraunces', 'serif'],
+        sans: ['DM Sans', 'sans-serif'],
+      },
     },
   },
   plugins: [],

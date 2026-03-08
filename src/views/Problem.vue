@@ -170,7 +170,7 @@
           List an item or find equipment – it’s completely free. Join our
           community today.
         </p>
-        <button class="bg-amber text-teal font-bold py-3 px-6 rounded-full">
+        <button @click="$router.push('/auth')" class="bg-amber text-teal font-bold py-3 px-6 rounded-full">
           Get Started
         </button>
       </div>
@@ -181,10 +181,13 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
 import HeroSection from "../components/HeroSection.vue";
 import OurSolution from "../components/OurSolution.vue";
 import OurStories from "../components/OurStories.vue";
 import AppFooter from "../components/AppFooter.vue";
+
+const router = useRouter()
 </script>
 
 <style scoped>

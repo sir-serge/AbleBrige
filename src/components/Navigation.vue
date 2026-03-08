@@ -62,7 +62,7 @@
 
         <div class="hidden lg:flex items-center justify-end">
           <router-link
-            to="/problem#get-started"
+            to="/auth"
             class="bg-amber text-white py-2.5 px-4 rounded-full no-underline font-bold tracking-tight max-w-[130px] whitespace-nowrap text-sm hover:brightness-95"
             >Get Started Free</router-link
           >
@@ -103,7 +103,7 @@
         >
         <router-link
           @click="open = false"
-          to="/problem#get-started"
+          to="/auth"
           class="block bg-amber text-white py-2.5 px-3 rounded-full text-center font-bold mt-2"
           >Get Started Free</router-link
         >
