@@ -1,5 +1,5 @@
 <template>
-  <section id="stories-section" class="px-12 py-20">
+  <section id="stories" class="px-12 py-20">
     <!-- Section intro row -->
     <div class="flex items-end justify-between gap-12 mb-14">
       <div>

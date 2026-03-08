@@ -160,6 +160,8 @@
     </section>
 
     <OurSolution />
+
+    <!-- Success Stories -->
     <OurStories />
 
     <!-- Get Started Section -->
@@ -175,7 +177,6 @@
         </button>
       </div>
     </section>
-    <OurStories />
     <AppFooter />
   </div>
 </template>

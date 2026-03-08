@@ -1,8 +1,5 @@
 <template>
-  <section
-    id="our-solution"
-    class="bg-gradient-to-br from-off to-cream py-20 px-5"
-  >
+  <section id="solution" class="bg-gradient-to-br from-off to-cream py-20 px-5">
     <div class="max-w-7xl mx-auto">
       <div class="text-center mb-16">
         <h1 class="text-4xl md:text-5xl font-bold text-dark mb-6">

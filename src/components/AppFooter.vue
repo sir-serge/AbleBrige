@@ -33,16 +33,16 @@
           <h4 class="text-lg font-semibold text-white mb-6">Quick Links</h4>
           <ul class="space-y-3">
             <li>
-              <a href="#home" class="text-white/80 hover:text-amber transition-colors">Home</a>
+              <router-link to="/" class="text-white/80 hover:text-amber transition-colors">Home</router-link>
             </li>
             <li>
-              <a href="#problem" class="text-white/80 hover:text-amber transition-colors">The Problem</a>
+              <router-link to="/problem#problem" class="text-white/80 hover:text-amber transition-colors">The Problem</router-link>
             </li>
             <li>
-              <a href="#solution" class="text-white/80 hover:text-amber transition-colors">Our Solution</a>
+              <router-link to="/problem#solution" class="text-white/80 hover:text-amber transition-colors">Our Solution</router-link>
             </li>
             <li>
-              <a href="#stories" class="text-white/80 hover:text-amber transition-colors">Success Stories</a>
+              <router-link to="/problem#stories" class="text-white/80 hover:text-amber transition-colors">Success Stories</router-link>
             </li>
           </ul>
         </div>

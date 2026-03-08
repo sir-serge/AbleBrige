@@ -14,7 +14,7 @@
         aria-label="Primary"
       >
         <router-link
-          to="/problem#home"
+          to="/problem"
           class="text-muted no-underline font-bold py-2 px-1 transition-colors duration-150 ease-in-out transform duration-150 ease-in-out text-sm hover:text-white router-link-active:text-white"
           >Home</router-link
         >
@@ -79,7 +79,7 @@
       <div class="py-3 px-5 pb-4.5 flex flex-col gap-2">
         <router-link
           @click="open = false"
-          to="/problem#home"
+          to="/problem"
           class="text-muted no-underline py-2.5 px-1.5 font-bold hover:text-white router-link-active:text-white"
           >Home</router-link
         >
