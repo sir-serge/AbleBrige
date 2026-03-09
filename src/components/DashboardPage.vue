@@ -3,7 +3,6 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 md:mb-8 gap-4">
       <div>
-        <p class="text-xs font-semibold tracking-[3px] uppercase text-muted mb-1">Good Morning</p>
         <h1 class="font-fraunces text-2xl md:text-3xl font-bold text-dark">Welcome back, Claudine 👋</h1>
         <p class="text-sm text-gray-500 mt-1">Here is what is happening with your requests today.</p>
       </div>
