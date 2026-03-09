@@ -1,15 +1,23 @@
 <template>
+  <!-- Problem Page View - Main landing page with hero, problem statement, solution, and stories -->
   <div>
+    <!-- Hero Section - Main landing hero with call-to-action and equipment showcase -->
     <HeroSection />
+
+    <!-- Problem Section - Explains the problem AbleBridge is solving -->
     <section id="problem" class="bg-darker py-20 px-5">
       <div class="max-w-6xl mx-auto">
+        <!-- Section Header -->
         <div class="text-center mb-16">
+          <!-- Main Title -->
           <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">
             THE PROBLEM WE ARE SOLVING
           </h1>
+          <!-- Subtitle -->
           <h2 class="text-2xl md:text-3xl font-semibold text-amber mb-8">
             Millions need help. No one is connecting them.
           </h2>
+          <!-- Problem Description -->
           <p
             class="text-lg text-light-green-text max-w-3xl mx-auto leading-relaxed"
           >
@@ -21,9 +29,11 @@
           </p>
         </div>
 
-        <!-- Problem Cards -->
+        <!-- Problem Cards Grid - 4 key issues -->
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <!-- Problem Card 1: No Affordable Access -->
           <div class="problem-card">
+            <!-- Icon -->
             <div class="text-4xl mb-4 text-center">
               <svg
                 class="w-10 h-10 mx-auto text-amber"
@@ -33,9 +43,11 @@
                 <circle cx="12" cy="12" r="10" />
               </svg>
             </div>
+            <!-- Card Title -->
             <h3 class="text-xl font-bold text-amber mb-4 text-center">
               No Affordable Access
             </h3>
+            <!-- Card Description -->
             <p class="text-light-green-text leading-relaxed text-center">
               Millions of people with disabilities in low-income countries
               cannot afford essential assistive equipment - wheelchairs, hearing
@@ -172,7 +184,10 @@
           List an item or find equipment – it’s completely free. Join our
           community today.
         </p>
-        <button @click="$router.push('/auth')" class="bg-amber text-teal font-bold py-3 px-6 rounded-full">
+        <button
+          @click="$router.push('/auth')"
+          class="bg-amber text-teal font-bold py-3 px-6 rounded-full"
+        >
           Get Started
         </button>
       </div>
@@ -182,13 +197,13 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
 import HeroSection from "../components/HeroSection.vue";
 import OurSolution from "../components/OurSolution.vue";
 import OurStories from "../components/OurStories.vue";
 import AppFooter from "../components/AppFooter.vue";
 
-const router = useRouter()
+const router = useRouter();
 </script>
 
 <style scoped>

@@ -1,11 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Problem from '../views/Problem.vue'
 import Auth from '../views/Auth.vue'
+import Dashboard from '../views/Dashboard.vue'
 
 const routes = [
-	{ path: '/', redirect: '/problem' },
+	{ path: '/', redirect: '/dashboard' },
 	{ path: '/problem', name: 'Problem', component: Problem },
-	{ path: '/auth', name: 'Auth', component: Auth }
+	{ path: '/auth', name: 'Auth', component: Auth },
+	{ path: '/dashboard', name: 'Dashboard', component: Dashboard }
 ]
 
 const router = createRouter({
