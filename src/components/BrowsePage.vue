@@ -129,9 +129,13 @@
 <script setup>
 // Vue Composition API - Reactive data, computed properties, and imports
 import { ref, computed } from "vue";
+import { useEquipmentStore } from "../stores/equipment.js";
 
 // Define custom events that this component can emit to parent
 defineEmits(["open-modal"]);
+
+// Use Pinia store for centralized state management
+const equipmentStore = useEquipmentStore();
 
 // Reactive state for filters and search
 const activeCategory = ref("all"); // Currently selected disability category
@@ -168,125 +172,10 @@ const activeCategoryDesc = computed(
   () => categoryDescriptions[activeCategory.value],
 );
 
-// Sample equipment data - would come from API in real app
-const items = ref([
-  {
-    id: 1,
-    name: "Manual Wheelchair",
-    icon: "♿",
-    bgClass: "bg-gradient-to-br from-teal-pale to-[#C5E4DC]", // Gradient background for icon
-    category: "Mobility",
-    categoryColor: "text-teal",
-    distance: "📍 4 km",
-    description:
-      "Adult size, foldable, good condition. Used for 8 months after accident recovery.",
-    condition: "Good condition",
-    conditionClass: "bg-teal-pale text-teal", // Green styling for good condition
-    cat: "mobility",
-  },
-  {
-    id: 2,
-    name: "Rollator Walker",
-    icon: "🚶",
-    bgClass: "bg-gradient-to-br from-teal-pale to-[#B2DFDB]",
-    category: "Mobility",
-    categoryColor: "text-teal",
-    distance: "📍 3 km",
-    description:
-      "4-wheel rollator with seat and brakes. Great for outdoor use. Adjustable height.",
-    condition: "Good condition",
-    conditionClass: "bg-teal-pale text-teal",
-    cat: "mobility",
-  },
-  {
-    id: 3,
-    name: "Forearm Crutches",
-    icon: "🩼",
-    bgClass: "bg-gradient-to-br from-[#E8F4F1] to-[#C5E4DC]",
-    category: "Mobility",
-    categoryColor: "text-teal",
-    distance: "📍 7 km",
-    description:
-      "Pair of aluminum forearm crutches, barely used. Adjustable for height 150–185cm.",
-    condition: "Like New",
-    conditionClass: "bg-green-50 text-green-700",
-    cat: "mobility",
-  },
-  {
-    id: 4,
-    name: "Behind-the-Ear Hearing Aid",
-    icon: "👂",
-    bgClass: "bg-gradient-to-br from-[#FFF3E0] to-[#FFE0B2]",
-    category: "Hearing",
-    categoryColor: "text-amber",
-    distance: "📍 5 km",
-    description:
-      "Left ear BTE hearing aid, near new condition. Comes with extra batteries and case.",
-    condition: "Like New",
-    conditionClass: "bg-green-50 text-green-700",
-    cat: "hearing",
-  },
-  {
-    id: 5,
-    name: "Amplified Telephone",
-    icon: "📞",
-    bgClass: "bg-gradient-to-br from-[#FFF3E0] to-[#FFECB3]",
-    category: "Hearing",
-    categoryColor: "text-amber",
-    distance: "📍 8 km",
-    description:
-      "Extra-loud landline phone with visual ringer for people with hearing loss.",
-    condition: "Good condition",
-    conditionClass: "bg-[#FFF3E0] text-amber",
-    cat: "hearing",
-  },
-  {
-    id: 6,
-    name: "White Mobility Cane",
-    icon: "🦯",
-    bgClass: "bg-gradient-to-br from-teal-pale to-[#B2DFDB]",
-    category: "Vision",
-    categoryColor: "text-teal-lt",
-    distance: "📍 2 km",
-    description:
-      "Folding white cane, 120cm. Used briefly, near-new. Correct grip and tip included.",
-    condition: "Like New",
-    conditionClass: "bg-green-50 text-green-700",
-    cat: "vision",
-  },
-  {
-    id: 7,
-    name: "Bath Safety Seat",
-    icon: "🛁",
-    bgClass: "bg-gradient-to-br from-[#F0F8F6] to-[#C5E4DC]",
-    category: "Daily Living",
-    categoryColor: "text-teal-mid",
-    distance: "📍 6 km",
-    description:
-      "Adjustable bath bench with non-slip feet. Supports up to 135kg. Lightweight.",
-    condition: "Good condition",
-    conditionClass: "bg-teal-pale text-teal",
-    cat: "daily",
-  },
-  {
-    id: 8,
-    name: "Digital Reminder Clock",
-    icon: "🕐",
-    bgClass: "bg-gradient-to-br from-[#EDE9FE] to-[#DDD6FE]",
-    category: "Cognitive",
-    categoryColor: "text-purple-600",
-    distance: "📍 9 km",
-    description:
-      "Large-display day/date/time clock with medication reminder alarms. For dementia care.",
-    condition: "Like New",
-    conditionClass: "bg-green-50 text-green-700",
-    cat: "cognitive",
-  },
-]);
-
 // Computed property for filtering and sorting equipment items
 const filteredItems = computed(() => {
-  let filtered = items.value;
+  // Get items from store
+  let filtered = equipmentStore.availableItems;
 
   // Filter by selected category (if not "all")
   if (activeCategory.value !== "all") {

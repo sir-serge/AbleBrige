@@ -58,23 +58,37 @@
             request.status
           }}</span>
 
-          <!-- Action Button (if available) -->
-          <button
-            v-if="request.action"
-            class="bg-teal text-white text-xs px-3 md:px-4 py-2 rounded-lg font-semibold hover:bg-teal-mid transition-colors w-full sm:w-auto"
-            :class="request.actionClass"
-            @click="handleAction(request.action)"
-          >
-            {{ request.action }}
-          </button>
+          <!-- Action Buttons Container -->
+          <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-shrink-0">
+            <!-- Alternative Action Button (if available) -->
+            <button
+              v-if="request.altAction"
+              class="bg-gray-100 text-gray-500 text-xs px-3 md:px-4 py-2 rounded-lg font-semibold cursor-default w-full sm:w-auto"
+            >
+              {{ request.altAction }}
+            </button>
 
-          <!-- Alternative Action Button (if available) -->
-          <button
-            v-if="request.altAction"
-            class="bg-gray-100 text-gray-500 text-xs px-3 md:px-4 py-2 rounded-lg font-semibold cursor-default w-full sm:w-auto"
-          >
-            {{ request.altAction }}
-          </button>
+            <!-- Primary Action Button (if available) -->
+            <button
+              v-if="request.action"
+              class="bg-teal text-white text-xs px-3 md:px-4 py-2 rounded-lg font-semibold hover:bg-teal-mid transition-colors w-full sm:w-auto"
+              :class="request.actionClass"
+              @click="handleAction(request.action)"
+            >
+              {{ request.action }}
+            </button>
+
+            <!-- Cancel Button (for pending and approved requests) - LAST BUTTON -->
+            <button
+              v-if="
+                request.status === 'Pending' || request.status === 'Approved'
+              "
+              class="bg-gray-100 text-gray-500 text-xs px-3 md:px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors w-full sm:w-auto"
+              @click="handleCancel(request.id)"
+            >
+              Cancel Request
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -83,63 +97,35 @@
 
 <script setup>
 // Vue Composition API - Reactive data and imports
-import { ref } from "vue";
+import { computed } from "vue";
+import { useEquipmentStore } from "../stores/equipment.js";
 
 // Define custom events that this component can emit to parent
 defineEmits(["page-change"]);
 
-// Reactive requests data - User's equipment requests with status and actions
-// Each request has: id, name, icon, donor, location, time, status, and styling classes
-const requests = ref([
-  {
-    id: 1,
-    name: "Manual Wheelchair",
-    icon: "♿",
-    iconClass: "bg-teal-pale", // Background color for icon
-    donor: "Donor: Jean-Paul M.",
-    location: "Kigali",
-    time: "Requested 3 days ago",
-    status: "Approved",
-    pillClass: "pill-approved", // Green status badge
-    borderClass: "border-teal/10", // Green border
-    action: "Arrange Pickup", // Primary action button
-  },
-  {
-    id: 2,
-    name: "Forearm Crutches",
-    icon: "🩼",
-    iconClass: "bg-[#FFF3E0]", // Amber background for icon
-    donor: "Donor: Alice K.",
-    location: "Kigali",
-    time: "Requested yesterday",
-    status: "Pending",
-    pillClass: "pill-pending", // Amber status badge
-    borderClass: "border-amber/15", // Amber border
-    altAction: "Waiting...", // Disabled alternative action
-  },
-  {
-    id: 3,
-    name: "Bath Safety Seat",
-    icon: "🛁",
-    iconClass: "bg-red-50", // Red background for icon
-    donor: "Donor: Samuel O.",
-    location: "Nairobi",
-    time: "Requested 1 week ago",
-    status: "Denied",
-    pillClass: "pill-denied", // Red status badge
-    borderClass: "border-red-100", // Red border
-    opacity: true, // Reduced opacity for denied items
-    action: "Find Similar", // Alternative action for denied requests
-    actionClass: "hover:bg-teal-mid",
-  },
-]);
+// Use Pinia store for centralized state management
+const equipmentStore = useEquipmentStore();
+
+// Computed property to get requests from store
+const requests = computed(() => equipmentStore.requests);
 
 // Handle button clicks on request actions
 const handleAction = (action) => {
   if (action === "Find Similar") {
-    // Emit event to parent to navigate to browse page
+    // Emit to change to browse page
     emit("page-change", "browse");
+  } else if (action === "Arrange Pickup") {
+    // Update request status to approved
+    const requestId = requests.value.find((r) => r.action === action)?.id;
+    if (requestId) {
+      equipmentStore.updateRequestStatus(requestId, "Approved");
+    }
   }
+};
+
+// Handle request cancellation
+const handleCancel = (requestId) => {
+  equipmentStore.cancelRequest(requestId);
 };
 </script>
 
@@ -171,5 +157,11 @@ const handleAction = (action) => {
 .pill-denied {
   background: #fef2f2;
   color: #dc2626;
+}
+
+/* Cancelled Status - Gray pill */
+.pill-cancelled {
+  background: #f8f9fa;
+  color: #6b7280;
 }
 </style>

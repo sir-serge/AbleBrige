@@ -1,13 +1,25 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "../stores/auth.js";
 import Problem from "../views/Problem.vue";
 import Auth from "../views/Auth.vue";
 import Dashboard from "../views/Dashboard.vue";
 
 const routes = [
-  { path: "/", redirect: "/problem" },
+  {
+    path: "/",
+    redirect: () => {
+      const authStore = useAuthStore();
+      return authStore.isAuthenticated ? "/dashboard" : "/problem";
+    },
+  },
   { path: "/problem", name: "Problem", component: Problem },
   { path: "/auth", name: "Auth", component: Auth },
-  { path: "/dashboard", name: "Dashboard", component: Dashboard },
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    component: Dashboard,
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({
@@ -23,6 +35,19 @@ const router = createRouter({
       return { top: 0 };
     }
   },
+});
+
+// Navigation guard for protected routes
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    // Redirect to auth page if not authenticated
+    next("/auth");
+  } else {
+    // Otherwise proceed
+    next();
+  }
 });
 
 export default router;
