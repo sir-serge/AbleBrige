@@ -19,7 +19,7 @@
           <div
             class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-teal-pale flex items-center justify-center text-2xl md:text-3xl"
           >
-            👩
+            {{ userAvatar }}
           </div>
           <!-- User Info - Name and role/location -->
           <div class="min-w-0 flex-1">
@@ -27,10 +27,10 @@
             <h3
               class="font-fraunces text-lg md:text-xl font-bold text-dark truncate"
             >
-              Claudine Uwase
+              {{ userDisplayName }}
             </h3>
             <!-- User role and location -->
-            <p class="text-sm text-muted">Recipient · Kigali, Rwanda</p>
+            <p class="text-sm text-muted">{{ userRoleAndLocation }}</p>
           </div>
         </div>
 
@@ -47,17 +47,54 @@
               class="text-xs text-muted font-semibold uppercase tracking-wide"
               >{{ field.label }}</span
             >
-            <!-- Field value with word wrap for long content -->
-            <span class="text-sm text-dark break-words">{{ field.value }}</span>
+            <!-- Field value or input -->
+            <div
+              v-if="isEditing && field.editable"
+              class="flex items-center gap-2"
+            >
+              <input
+                v-model="editForm[field.key]"
+                :type="field.type || 'text'"
+                class="text-sm border border-gray-200 rounded px-2 py-1 flex-1"
+                :placeholder="field.value"
+              />
+              <button
+                @click="cancelEdit"
+                class="text-xs text-gray-500 hover:text-red-500"
+              >
+                ✕
+              </button>
+            </div>
+            <span v-else class="text-sm text-dark break-words">{{
+              field.value
+            }}</span>
           </div>
         </div>
 
-        <!-- Edit Profile Button -->
-        <button
-          class="mt-5 w-full py-3 border border-teal/20 rounded-xl text-sm font-semibold text-teal hover:bg-teal-pale transition-colors"
-        >
-          Edit Profile
-        </button>
+        <!-- Edit/Save/Cancel Buttons -->
+        <div class="mt-5 flex gap-2">
+          <button
+            v-if="!isEditing"
+            @click="startEdit"
+            class="w-full py-3 border border-teal/20 rounded-xl text-sm font-semibold text-teal hover:bg-teal-pale transition-colors"
+          >
+            Edit Profile
+          </button>
+          <div v-else class="flex gap-2 w-full">
+            <button
+              @click="saveProfile"
+              class="flex-1 py-3 bg-teal text-white rounded-xl text-sm font-semibold hover:bg-teal-mid transition-colors"
+            >
+              Save Changes
+            </button>
+            <button
+              @click="cancelEdit"
+              class="flex-1 py-3 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Right Column: User Impact Statistics -->
@@ -91,25 +128,190 @@
 </template>
 
 <script setup>
-// Vue Composition API - Reactive data and imports
-import { ref } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useAuthStore } from "../stores/auth.js";
+import { useEquipmentStore } from "../stores/equipment.js";
 
-// Reactive profile fields data - User personal information
-// Each field has: key (unique identifier), label (display name), value (field content)
-const profileFields = ref([
-  { key: "email", label: "Email", value: "claudine@email.com" },
-  { key: "location", label: "Location", value: "Kigali, Rwanda" },
-  { key: "disability", label: "Disability", value: "Mobility — Wheelchair" },
-  { key: "memberSince", label: "Member Since", value: "January 2025" },
-]);
+const authStore = useAuthStore();
+const equipmentStore = useEquipmentStore();
 
-// Reactive impact statistics data - User's platform activity metrics
-// Each stat has: id (unique identifier), value (numeric value), label (description)
-const impactStats = ref([
-  { id: 1, value: 3, label: "Equipment Requests Made" }, // Number of items user has requested
-  { id: 2, value: 1, label: "Items Successfully Received" }, // Number of items user actually received
-  { id: 3, value: 6, label: "Items Available Near You" }, // Available items in user's area
-]);
+// Edit state
+const isEditing = ref(false);
+const editForm = ref({});
+
+// Computed properties for user display
+const userDisplayName = computed(() => {
+  const user = authStore.user;
+  if (user?.firstName || user?.lastName) {
+    return `${user.firstName || ""} ${user.lastName || ""}`.trim();
+  }
+  return user?.email?.split("@")[0] || "User";
+});
+
+const userAvatar = computed(() => {
+  const role = authStore.user?.role;
+  return role === "donor" ? "👨" : "👩";
+});
+
+const userRoleAndLocation = computed(() => {
+  const user = authStore.user;
+  const role = user?.role === "donor" ? "Donor" : "Recipient";
+  const location = user?.location || "Location not specified";
+  return `${role} · ${location}`;
+});
+
+// Dynamic profile fields based on user role
+const profileFields = computed(() => {
+  const user = authStore.user;
+  const fields = [
+    {
+      key: "email",
+      label: "Email",
+      value: user?.email || "Not specified",
+      editable: false,
+      type: "email",
+    },
+    {
+      key: "location",
+      label: "Location",
+      value: user?.location || "Not specified",
+      editable: true,
+      type: "text",
+    },
+  ];
+
+  // Add role-specific fields
+  if (user?.role === "recipient") {
+    fields.push(
+      {
+        key: "disabilityType",
+        label: "Disability Type",
+        value: user?.disabilityType || "Not specified",
+        editable: true,
+        type: "text",
+      },
+      {
+        key: "disabilityCause",
+        label: "Disability Cause",
+        value: user?.disabilityCause || "Not specified",
+        editable: true,
+        type: "text",
+      },
+    );
+  }
+
+  // Add common fields
+  fields.push(
+    {
+      key: "firstName",
+      label: "First Name",
+      value: user?.firstName || "Not specified",
+      editable: true,
+      type: "text",
+    },
+    {
+      key: "lastName",
+      label: "Last Name",
+      value: user?.lastName || "Not specified",
+      editable: true,
+      type: "text",
+    },
+  );
+
+  return fields;
+});
+
+// Dynamic impact statistics based on user role
+const impactStats = computed(() => {
+  const user = authStore.user;
+  const stats = [];
+
+  if (user?.role === "donor") {
+    const donations = equipmentStore.donations;
+    stats.push(
+      {
+        id: 1,
+        value: donations.length,
+        label: "Items Donated",
+      },
+      {
+        id: 2,
+        value: donations.filter((d) => d.status === "Donated").length,
+        label: "Items Successfully Delivered",
+      },
+      {
+        id: 3,
+        value: equipmentStore.requests.filter((r) => r.status === "Pending")
+          .length,
+        label: "Pending Requests",
+      },
+    );
+  } else {
+    const requests = equipmentStore.requests;
+    stats.push(
+      {
+        id: 1,
+        value: requests.length,
+        label: "Equipment Requests Made",
+      },
+      {
+        id: 2,
+        value: requests.filter((r) => r.status === "Approved").length,
+        label: "Items Successfully Received",
+      },
+      {
+        id: 3,
+        value: equipmentStore.availableItems.length,
+        label: "Items Available Near You",
+      },
+    );
+  }
+
+  return stats;
+});
+
+// Edit functions
+const startEdit = () => {
+  isEditing.value = true;
+  // Initialize edit form with current values
+  editForm.value = {};
+  profileFields.value.forEach((field) => {
+    if (field.editable) {
+      editForm.value[field.key] =
+        field.value !== "Not specified" ? field.value : "";
+    }
+  });
+};
+
+const saveProfile = () => {
+  // Update user data in auth store
+  const updatedUserData = { ...authStore.user };
+
+  // Update editable fields
+  profileFields.value.forEach((field) => {
+    if (field.editable && editForm.value[field.key]) {
+      updatedUserData[field.key] = editForm.value[field.key];
+    }
+  });
+
+  // Update auth store
+  authStore.updateUser(updatedUserData);
+
+  // Exit edit mode
+  isEditing.value = false;
+
+  // Show success feedback (could add toast notification here)
+  console.log("Profile updated successfully");
+};
+
+const cancelEdit = () => {
+  isEditing.value = false;
+  editForm.value = {};
+};
+
+onMounted(() => {
+  // Component initialization if needed
+});
 </script>
 
 <style scoped>

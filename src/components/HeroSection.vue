@@ -38,6 +38,7 @@
           <div class="flex flex-col sm:flex-row gap-4 mb-12">
             <!-- Primary CTA - Browse Equipment -->
             <button
+              @click="handleBrowseClick"
               class="bg-amber text-white px-8 py-4 rounded-xl font-bold hover:bg-amber-light transition-all transform hover:scale-105 flex items-center justify-center shadow-lg"
             >
               Browse Equipment
@@ -59,6 +60,7 @@
 
             <!-- Secondary CTA - Donate an Item -->
             <button
+              @click="handleDonateClick"
               class="border-2 border-white/50 text-white px-8 py-4 rounded-xl font-bold hover:bg-white hover:text-dark-green transition-all transform hover:scale-105"
             >
               Donate an Item
@@ -213,7 +215,27 @@
 </template>
 
 <script setup>
-// Hero section with static content - no reactive data needed
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth.js";
+
+const router = useRouter();
+const authStore = useAuthStore();
+
+const handleBrowseClick = () => {
+  if (authStore.isAuthenticated) {
+    router.push("/dashboard");
+  } else {
+    router.push("/auth");
+  }
+};
+
+const handleDonateClick = () => {
+  if (authStore.isAuthenticated) {
+    router.push("/dashboard");
+  } else {
+    router.push("/auth");
+  }
+};
 </script>
 
 <style scoped>

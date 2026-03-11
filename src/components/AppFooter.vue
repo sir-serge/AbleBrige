@@ -1,9 +1,9 @@
 <!-- Footer Component - Main site footer with navigation, resources, and contact information -->
 <template>
-  <footer class="bg-dark text-white py-16 px-5">
+  <footer class="bg-dark text-white py-8 px-5">
     <!-- Main Footer Grid - 4 columns on large screens -->
     <div class="max-w-7xl mx-auto">
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
         <!-- Column 1: About Section -->
         <div>
           <!-- Logo/Brand -->
@@ -163,7 +163,7 @@
                   d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                 />
               </svg>
-              +1 (555) 123-4567
+              +(250) -780-000-009
             </li>
             <!-- Location -->
             <li class="flex items-start text-white/80">
@@ -183,7 +183,7 @@
       </div>
 
       <!-- Bottom Bar - Copyright and Legal Links -->
-      <div class="border-t border-white/20 pt-8">
+      <div class="border-t border-white/20 pt-4">
         <div class="flex flex-col md:flex-row justify-between items-center">
           <!-- Copyright Notice -->
           <p class="text-white/60 text-sm mb-4 md:mb-0">

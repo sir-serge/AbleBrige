@@ -177,7 +177,7 @@
     <OurStories />
 
     <!-- Get Started Section -->
-    <section id="get-started" class="bg-teal py-20 px-5">
+    <section id="get-started" class="bg-teal py-12 px-5">
       <div class="max-w-6xl mx-auto text-center text-white">
         <h2 class="text-3xl font-bold mb-4">Ready to Make a Difference?</h2>
         <p class="mb-8">
