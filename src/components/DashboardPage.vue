@@ -2,7 +2,8 @@
   <div class="p-4 md:p-6 lg:p-8">
     <!-- Header -->
     <div
-      class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 md:mb-8 gap-4"    >
+      class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 md:mb-8 gap-4"
+    >
       <div>
         <h1 class="font-fraunces text-2xl md:text-3xl font-bold text-dark">
           Welcome back, {{ userName }} 👋
@@ -217,6 +218,8 @@
 </template>
 
 <script setup>
+// Dashboard Page Component - Role-based dashboard with dynamic content
+// Displays personalized dashboard based on user role (donor or recipient)
 import { computed } from "vue";
 import { useAuthStore } from "../stores/auth.js";
 import { useEquipmentStore } from "../stores/equipment.js";
@@ -224,11 +227,18 @@ import { useEquipmentStore } from "../stores/equipment.js";
 const authStore = useAuthStore();
 const equipmentStore = useEquipmentStore();
 
-// Computed properties based on user role
+// ===== COMPUTED PROPERTIES =====
+// Check if current user is a donor
+// Returns true if user role is 'donor', false otherwise
 const isDonor = computed(() => authStore.user?.role === "donor");
+
+// Check if current user is a recipient
+// Returns true if user role is 'recipient', false otherwise
 const isRecipient = computed(() => authStore.user?.role === "recipient");
 
-// User display name
+// Generate user display name from auth store
+// Uses firstName + lastName, falls back to email username
+// Returns a string representing the user's display name
 const userName = computed(() => {
   const user = authStore.user;
   if (user?.firstName || user?.lastName) {
@@ -237,10 +247,20 @@ const userName = computed(() => {
   return user?.email?.split("@")[0] || "User";
 });
 
-// Stats based on role
+// Dynamic statistics based on user role
+// Returns different stats for donors vs recipients
+// Returns an object with the following properties:
+//   - totalDonations (donors only)
+//   - listed (donors only)
+//   - donated (donors only)
+//   - pendingRequests (donors only)
+//   - totalRequests (recipients only)
+//   - pending (recipients only)
+//   - approved (recipients only)
+//   - nearby (recipients only)
 const stats = computed(() => {
   if (isDonor.value) {
-    // Donor stats
+    // Donor statistics
     const donations = equipmentStore.donations;
     return {
       totalDonations: donations.length,
@@ -251,7 +271,7 @@ const stats = computed(() => {
       ).length,
     };
   } else {
-    // Recipient stats
+    // Recipient statistics
     const requests = equipmentStore.requests;
     return {
       totalRequests: requests.length,
@@ -262,10 +282,17 @@ const stats = computed(() => {
   }
 });
 
-// Recent activity based on role
+// Recent activity based on user role
+// Shows donor donations or recipient requests
+// Returns an array of objects with the following properties:
+//   - icon
+//   - title
+//   - description
+//   - time
+//   - type
 const recentActivity = computed(() => {
   if (isDonor.value) {
-    // Donor activity
+    // Donor activity - show recent donations
     return equipmentStore.donations.slice(0, 3).map((donation) => ({
       icon: "📦",
       title: `Donation ${donation.status}`,
@@ -274,7 +301,7 @@ const recentActivity = computed(() => {
       type: "donation",
     }));
   } else {
-    // Recipient activity
+    // Recipient activity - show recent requests
     return equipmentStore.requests.slice(0, 3).map((request) => ({
       icon:
         request.status === "Pending"
@@ -290,7 +317,9 @@ const recentActivity = computed(() => {
   }
 });
 
-// Nearby items for recipients
+// Available nearby items for recipients
+// Only shows for recipient users
+// Returns an array of objects representing nearby items
 const nearbyItems = computed(() => {
   if (isRecipient.value) {
     return equipmentStore.availableItems.slice(0, 3);
@@ -299,6 +328,8 @@ const nearbyItems = computed(() => {
 });
 
 // Recent donations for donors
+// Only shows for donor users
+// Returns an array of objects representing recent donations
 const recentDonations = computed(() => {
   if (isDonor.value) {
     return equipmentStore.donations.slice(0, 3);
@@ -306,7 +337,8 @@ const recentDonations = computed(() => {
   return [];
 });
 
-// Emit events to parent
+// Emit events to parent Dashboard component
+// Emits 'page-change' and 'open-modal' events
 const emit = defineEmits(["page-change", "open-modal"]);
 </script>
 

@@ -719,6 +719,8 @@
 </template>
 
 <script setup>
+// Authentication View - User login and signup interface
+// This component handles user authentication with role-based forms and validation
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth.js";
@@ -726,9 +728,11 @@ import { useAuthStore } from "../stores/auth.js";
 const router = useRouter();
 const authStore = useAuthStore();
 
-// Reactive data
+// ===== REACTIVE DATA =====
+// UI state for switching between login and signup forms
 const isLogin = ref(true);
-const selectedRole = ref("donor");
+// Selected user role (donor or recipient) - get from query params or default to donor
+const selectedRole = ref(router.currentRoute.value.query.role || "donor");
 const loginEmail = ref("");
 const loginPw = ref("");
 const rememberMe = ref(false);
@@ -746,21 +750,24 @@ const disabilityType = ref("");
 const disabilityCause = ref("");
 
 // Switch between login / signup
+// Updates UI state and shows appropriate form
 const switchTo = (panel) => {
   isLogin.value = panel === "login";
 };
 
-// Role selector
+// Handle user role selection
+// Updates selected role and manages recipient field visibility
 const selectRole = (role) => {
   selectedRole.value = role;
-  // Reset recipient fields when switching away
+  // Reset recipient fields when switching away from recipient role
   if (role !== "recipient") {
     disabilityType.value = "";
     disabilityCause.value = "";
   }
 };
 
-// Password visibility toggle
+// Toggle password visibility for input fields
+// Shows/hides password text and updates button icon
 const togglePw = (id) => {
   const input = document.getElementById(id);
   const btn = input.nextElementSibling;
@@ -769,7 +776,8 @@ const togglePw = (id) => {
   btn.textContent = show ? "🙈" : "👁️";
 };
 
-// Checkbox toggle
+// Toggle checkbox states (remember me, terms agreement)
+// Handles boolean state changes for form checkboxes
 const toggleCheck = (type) => {
   if (type === "remember") {
     rememberMe.value = !rememberMe.value;
@@ -778,7 +786,8 @@ const toggleCheck = (type) => {
   }
 };
 
-// Password strength
+// Password strength validation and visual feedback
+// Checks password criteria and updates strength indicator
 const checkStrength = () => {
   const val = signupPw.value;
   const bars = ["s1", "s2", "s3", "s4"].map((id) =>
@@ -808,7 +817,8 @@ const checkStrength = () => {
   label.style.color = val.length ? colors[score - 1] : "#9CA3AF";
 };
 
-// Email validation
+// Email validation with visual feedback
+// Validates email format and updates input styling
 const validateEmail = () => {
   const input = document.getElementById("signup-email");
   const err = document.getElementById("signup-email-error");
@@ -817,14 +827,16 @@ const validateEmail = () => {
   input.style.borderColor = !signupEmail.value || valid ? "#D0E8E3" : "#EF4444";
 };
 
-// Form submissions
+// ===== FORM SUBMISSION HANDLERS =====
+// Handle login form submission
+// Validates input and authenticates user
 const handleLogin = () => {
   if (!loginEmail.value || !loginPw.value) {
     shake("panel-login");
     return;
   }
 
-  // Create user data object
+  // Create user data object with login information and role
   const userData = {
     email: loginEmail.value,
     role: selectedRole.value,
@@ -833,9 +845,10 @@ const handleLogin = () => {
     location: location.value || "",
   };
 
-  // Store user in auth store
+  // Store user in authentication store
   authStore.login(userData);
 
+  // Show success overlay and redirect to dashboard
   showSuccessOverlay(
     "👋",
     "Welcome back!",
@@ -843,11 +856,17 @@ const handleLogin = () => {
   );
 };
 
+// Handle signup form submission
+// Validates all required fields and creates new user account
 const handleSignup = () => {
+  // Check if email and password are provided
   if (!signupEmail.value || !signupPw.value) {
     shake("panel-signup");
     return;
   }
+
+  // Additional validation for recipient role
+  // Check if disability type and cause are provided for recipient role
   if (
     selectedRole.value === "recipient" &&
     (!disabilityType.value || !disabilityCause.value)
@@ -856,7 +875,8 @@ const handleSignup = () => {
     return;
   }
 
-  // Create user data object
+  // Create comprehensive user data object
+  // Includes email, role, name, location, and disability information (if applicable)
   const userData = {
     email: signupEmail.value,
     role: selectedRole.value,
@@ -867,40 +887,58 @@ const handleSignup = () => {
     disabilityCause: disabilityCause.value,
   };
 
-  // Store user in auth store
+  // Store user in authentication store
   authStore.login(userData);
 
+  // Show role-specific success message
+  // Displays a success overlay with a welcome message for the new user
   const roleLabel = selectedRole.value === "donor" ? "Donor" : "Recipient";
   showSuccessOverlay(
     "🎉",
     "Account created!",
+    `Welcome to AbleBridge as a ${roleLabel}!`,
     `Welcome to AbleBridge as a ${roleLabel}. Your journey starts now.`,
   );
 };
 
-// Success overlay
+// ===== UI HELPER FUNCTIONS =====
+// Show success overlay with custom message
+// Displays success animation and redirects to appropriate dashboard based on user role
 const showSuccessOverlay = (icon, title, msg) => {
   successIcon.value = icon;
   successTitle.value = title;
   successMsg.value = msg;
   showSuccess.value = true;
+
+  // Redirect to appropriate dashboard based on user role after showing success message
+  setTimeout(() => {
+    const userRole = selectedRole.value;
+    if (userRole === "donor") {
+      router.push("/donor-dashboard");
+    } else if (userRole === "recipient") {
+      router.push("/recipient-dashboard");
+    } else {
+      router.push("/dashboard"); // Fallback to generic dashboard
+    }
+  }, 2000);
 };
 
-const closeSuccess = () => {
-  showSuccess.value = false;
-  // Navigate to dashboard instead of home page
-  router.push("/dashboard");
+// Shake animation for form validation errors
+// Adds visual feedback when form validation fails
+const shake = (panelId) => {
+  const panel = document.getElementById(panelId);
+  if (panel) {
+    panel.classList.add("animate-shake");
+    setTimeout(() => {
+      panel.classList.remove("animate-shake");
+    }, 500);
+  }
 };
 
-// Social login handlers
+// Social login handlers (placeholder functions)
+// These would integrate with actual OAuth providers
 const loginWithGoogle = () => {
-  // In a real app, this would integrate with Google OAuth
-  alert("Google login integration would be implemented here with OAuth 2.0");
-  showSuccessOverlay(
-    "🔵",
-    "Google Login",
-    "Google authentication would redirect here",
-  );
+  console.log("Login with Google");
 };
 
 const loginWithFacebook = () => {

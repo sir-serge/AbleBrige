@@ -10,8 +10,8 @@ const route = useRoute();
 <template>
   <!-- Main App Container - Root element of the entire application -->
   <div id="app">
-    <!-- Navigation Component - Only shown on pages other than dashboard -->
-    <Navigation v-if="route.path !== '/dashboard'" />
+    <!-- Navigation Component - Only shown on pages other than dashboard pages -->
+    <Navigation v-if="!route.path.includes('dashboard')" />
 
     <!-- Main Content Area - Where router-view renders different pages -->
     <main>

@@ -1,10 +1,19 @@
+// Equipment Store - Centralized state management for equipment, requests, and donations
+// This store handles all equipment-related operations including requests, donations, and available items
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
+// Create and export the equipment store using Pinia
 export const useEquipmentStore = defineStore("equipment", () => {
-  // State
+  // ===== STATE =====
+  // Array to store all equipment requests made by users
   const requests = ref([]);
+
+  // Array to store all donations made by donors
   const donations = ref([]);
+
+  // Array of available equipment items that users can request
+  // This is the catalog of donated items available for recipients
   const availableItems = ref([
     {
       id: 1,
@@ -120,7 +129,10 @@ export const useEquipmentStore = defineStore("equipment", () => {
     },
   ]);
 
-  // Actions
+  // ===== ACTIONS =====
+  // Create a new equipment request
+  // Called when a recipient requests an available item
+  // Generates a request object with unique ID and default status
   const createRequest = (item) => {
     const newRequest = {
       id: Date.now(),
@@ -140,6 +152,9 @@ export const useEquipmentStore = defineStore("equipment", () => {
     return newRequest;
   };
 
+  // Update the status of an existing request
+  // Called when donors approve or deny requests
+  // Updates UI elements (colors, buttons) based on new status
   const updateRequestStatus = (requestId, newStatus) => {
     const request = requests.value.find((r) => r.id === requestId);
     if (request) {
@@ -162,6 +177,9 @@ export const useEquipmentStore = defineStore("equipment", () => {
     }
   };
 
+  // Remove a request completely from the store
+  // Called when permanently deleting a request
+  // Finds request by ID and removes it from the array
   const removeRequest = (requestId) => {
     const index = requests.value.findIndex((r) => r.id === requestId);
     if (index > -1) {
@@ -169,6 +187,10 @@ export const useEquipmentStore = defineStore("equipment", () => {
     }
   };
 
+  // Cancel a request and handle related operations
+  // Called when user cancels their own request
+  // Also cancels duplicate requests for same equipment type
+  // Removes equipment from available items to prevent new requests
   const cancelRequest = (requestId) => {
     const request = requests.value.find((r) => r.id === requestId);
     if (request) {
@@ -210,6 +232,9 @@ export const useEquipmentStore = defineStore("equipment", () => {
     }
   };
 
+  // Add a new donation to the store
+  // Called when donors list equipment for donation
+  // Creates a donation object with unique ID and default status
   const addDonation = (donation) => {
     const newDonation = {
       id: Date.now(),
@@ -221,6 +246,9 @@ export const useEquipmentStore = defineStore("equipment", () => {
     return newDonation;
   };
 
+  // Update the status of an existing donation
+  // Called when donation status changes (e.g., from Listed to Donated)
+  // Updates the donation object with new status and timestamp
   const updateDonationStatus = (donationId, newStatus) => {
     const donation = donations.value.find((d) => d.id === donationId);
     if (donation) {
@@ -229,31 +257,37 @@ export const useEquipmentStore = defineStore("equipment", () => {
     }
   };
 
-  // Getters
+  // ===== GETTERS =====
+  // Filter requests by their status
+  // Returns array of requests matching the specified status (Pending, Approved, Denied, etc.)
   const getRequestsByStatus = (status) => {
     return requests.value.filter((r) => r.status === status);
   };
 
+  // Filter donations by their status
+  // Returns array of donations matching the specified status (Listed, Donated, etc.)
   const getDonationsByStatus = (status) => {
     return donations.value.filter((d) => d.status === status);
   };
 
+  // ===== RETURN =====
+  // Expose all state, actions, and getters for components to use
   return {
-    // State
-    requests,
-    donations,
-    availableItems,
+    // State variables
+    requests, // Array of all equipment requests
+    donations, // Array of all donations
+    availableItems, // Array of available equipment items
 
-    // Actions
-    createRequest,
-    updateRequestStatus,
-    removeRequest,
-    cancelRequest,
-    addDonation,
-    updateDonationStatus,
+    // Action functions
+    createRequest, // Function to create new equipment request
+    updateRequestStatus, // Function to update request status
+    removeRequest, // Function to remove request completely
+    cancelRequest, // Function to cancel request with auto-cancellation
+    addDonation, // Function to add new donation
+    updateDonationStatus, // Function to update donation status
 
-    // Getters
-    getRequestsByStatus,
-    getDonationsByStatus,
+    // Getter functions
+    getRequestsByStatus, // Function to filter requests by status
+    getDonationsByStatus, // Function to filter donations by status
   };
 });

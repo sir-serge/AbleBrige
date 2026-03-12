@@ -225,7 +225,7 @@ const handleBrowseClick = () => {
   if (authStore.isAuthenticated) {
     router.push("/dashboard");
   } else {
-    router.push("/auth");
+    router.push("/role-selection");
   }
 };
 
@@ -233,7 +233,7 @@ const handleDonateClick = () => {
   if (authStore.isAuthenticated) {
     router.push("/dashboard");
   } else {
-    router.push("/auth");
+    router.push("/role-selection");
   }
 };
 </script>

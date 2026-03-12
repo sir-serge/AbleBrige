@@ -74,6 +74,8 @@
 </template>
 
 <script setup>
+// Dashboard View - Main authenticated user interface with sidebar navigation
+// This component manages the dashboard layout and handles page routing within the dashboard
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth.js";
@@ -87,60 +89,82 @@ import ProfilePage from "../components/ProfilePage.vue";
 import ItemModal from "../components/ItemModal.vue";
 import Toast from "../components/Toast.vue";
 
+// Initialize router and stores
 const router = useRouter();
 const authStore = useAuthStore();
 const equipmentStore = useEquipmentStore();
 
+// ===== STATE =====
+// Reference to sidebar component for mobile menu control
 const sidebarRef = ref(null);
+// Currently active page within dashboard (dashboard, browse, requests, notifications, profile)
 const activePage = ref("dashboard");
+// Modal state for item details
 const modalOpen = ref(false);
+// Selected item for modal display
 const selectedItem = ref(null);
+// Toast notification state
 const toastVisible = ref(false);
+// Toast message content
 const toastMessage = ref("");
+// Toast icon (success, error, etc.)
 const toastIcon = ref("✅");
 
+// ===== METHODS =====
+// Set the active page within dashboard
+// Called by sidebar navigation and child components
 const setActivePage = (page) => {
   activePage.value = page;
 };
 
+// Toggle sidebar on mobile devices
+// Opens/closes the mobile navigation menu
 const toggleSidebar = () => {
   if (sidebarRef.value) {
     sidebarRef.value.toggleSidebar();
   }
 };
 
+// Open item modal with selected equipment
+// Called when user clicks on equipment item
 const openModal = (item) => {
   selectedItem.value = item;
   modalOpen.value = true;
 };
 
+// Close the item modal
+// Called by modal close button or overlay click
 const closeModal = () => {
   modalOpen.value = false;
   selectedItem.value = null;
 };
 
+// Send equipment request to donor
+// Called when user requests an item from browse page
 const sendRequest = (item) => {
-  // Create request using Pinia store
+  // Create request using equipment store
   equipmentStore.createRequest(item);
 
-  // Show success message
+  // Show success message to user
   toastMessage.value = "Request sent! The donor has been notified.";
   toastIcon.value = "✅";
   toastVisible.value = true;
 
-  // Close modal
+  // Close modal after request
   closeModal();
 
-  // Hide toast after 3.5 seconds
+  // Auto-hide toast after 3.5 seconds
   setTimeout(() => {
     toastVisible.value = false;
   }, 3500);
 };
 
+// Handle user logout
+// Called when user clicks logout in sidebar
 const handleLogout = () => {
-  // Logout user from auth store
+  // Logout user from auth store (clears user data and auth state)
   authStore.logout();
-  // Navigate to auth page
+  // Navigate to authentication page
   router.push("/auth");
 };
 </script>

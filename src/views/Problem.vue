@@ -197,12 +197,15 @@
 </template>
 
 <script setup>
+// Problem View - Main landing page with hero, problem statement, solution, and stories
+// This is the primary landing page that introduces AbleBridge and its mission
 import { useRouter } from "vue-router";
 import HeroSection from "../components/HeroSection.vue";
 import OurSolution from "../components/OurSolution.vue";
 import OurStories from "../components/OurStories.vue";
 import AppFooter from "../components/AppFooter.vue";
 
+// Router instance for navigation
 const router = useRouter();
 </script>
 

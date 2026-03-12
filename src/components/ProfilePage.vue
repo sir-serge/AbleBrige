@@ -128,18 +128,25 @@
 </template>
 
 <script setup>
+// Profile Page Component - User profile management with editing capabilities
+// Displays user profile information and allows editing of personal data
 import { ref, computed, onMounted } from "vue";
 import { useAuthStore } from "../stores/auth.js";
 import { useEquipmentStore } from "../stores/equipment.js";
 
+// Auth and equipment stores
 const authStore = useAuthStore();
 const equipmentStore = useEquipmentStore();
 
-// Edit state
+// ===== STATE =====
+// Controls whether profile is in edit mode
 const isEditing = ref(false);
+// Holds form data during editing
 const editForm = ref({});
 
-// Computed properties for user display
+// ===== COMPUTED PROPERTIES =====
+// Generate user display name from auth store
+// Uses firstName + lastName, falls back to email username
 const userDisplayName = computed(() => {
   const user = authStore.user;
   if (user?.firstName || user?.lastName) {
@@ -148,11 +155,15 @@ const userDisplayName = computed(() => {
   return user?.email?.split("@")[0] || "User";
 });
 
+// Dynamic avatar based on user role
+// Shows different emoji for donors vs recipients
 const userAvatar = computed(() => {
   const role = authStore.user?.role;
   return role === "donor" ? "👨" : "👩";
 });
 
+// User role and location string
+// Formats role and location for display
 const userRoleAndLocation = computed(() => {
   const user = authStore.user;
   const role = user?.role === "donor" ? "Donor" : "Recipient";
@@ -270,10 +281,12 @@ const impactStats = computed(() => {
   return stats;
 });
 
-// Edit functions
+// ===== EDIT FUNCTIONS =====
+// Enter edit mode and initialize form
+// Enables editing of profile fields and populates form with current values
 const startEdit = () => {
   isEditing.value = true;
-  // Initialize edit form with current values
+  // Initialize edit form with current values from profile fields
   editForm.value = {};
   profileFields.value.forEach((field) => {
     if (field.editable) {
@@ -283,32 +296,38 @@ const startEdit = () => {
   });
 };
 
+// Save profile changes
+// Updates user data in auth store and exits edit mode
 const saveProfile = () => {
-  // Update user data in auth store
+  // Create updated user object by merging changes
   const updatedUserData = { ...authStore.user };
 
-  // Update editable fields
+  // Update editable fields with form data
   profileFields.value.forEach((field) => {
     if (field.editable && editForm.value[field.key]) {
       updatedUserData[field.key] = editForm.value[field.key];
     }
   });
 
-  // Update auth store
+  // Update auth store with new user data
   authStore.updateUser(updatedUserData);
 
   // Exit edit mode
   isEditing.value = false;
 
-  // Show success feedback (could add toast notification here)
+  // Log success (could add toast notification here)
   console.log("Profile updated successfully");
 };
 
+// Cancel editing
+// Exits edit mode without saving changes
 const cancelEdit = () => {
   isEditing.value = false;
   editForm.value = {};
 };
 
+// Component lifecycle hook
+// Runs when component is mounted to the DOM
 onMounted(() => {
   // Component initialization if needed
 });
