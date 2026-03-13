@@ -6,25 +6,57 @@
          SIDEBAR
     ═══════════════════════════════════ -->
     <aside
-      class="w-60 bg-dark flex flex-col flex-shrink-0 sticky top-0 h-screen overflow-y-auto"
+      class="bg-dark flex flex-col flex-shrink-0 h-screen transition-all duration-300 ease-in-out z-50 lg:w-60 lg:relative lg:translate-x-0 lg:static w-16 fixed left-0 top-0 -translate-x-full"
+      :class="{ 'translate-x-0': mobileMenuOpen }"
     >
+      <!-- Mobile Menu Toggle -->
+      <div class="flex justify-end p-4 lg:hidden">
+        <button
+          @click="toggleMobileMenu"
+          class="text-white hover:text-gray-300"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
+        </button>
+      </div>
       <!-- Logo Section -->
-      <div class="px-5 pt-7 pb-5 border-b border-white/5">
-        <div class="font-fraunces text-xl font-bold text-white">
+      <div class="px-3 lg:px-5 pt-7 pb-6 border-b border-white/5">
+        <div class="font-fraunces text-xl font-bold text-white lg:block hidden">
           Able<span class="text-amber">Bridge</span>
         </div>
-        <div class="text-xs text-muted mt-0.5">Donor Portal</div>
+        <div class="text-xs text-muted mt-0.5 lg:block hidden">
+          Donor Portal
+        </div>
+        <!-- Mobile logo - just icon -->
+        <div class="lg:hidden flex justify-center">
+          <div class="font-fraunces text-lg font-bold text-white">
+            <span class="text-amber">A</span>
+          </div>
+        </div>
       </div>
 
       <!-- Donor Profile Pill -->
-      <div class="mx-4 mt-5 bg-white/5 border border-white/8 rounded-xl p-4">
+      <div
+        class="mx-4 mt-5 bg-white/5 border border-white/8 rounded-xl p-4 user-profile-pill lg:block hidden"
+      >
         <div class="flex items-center gap-3">
           <div
             class="w-10 h-10 rounded-full bg-amber/20 flex items-center justify-center text-xl flex-shrink-0"
           >
             👨
           </div>
-          <div class="overflow-hidden">
+          <div class="overflow-hidden user-profile-text">
             <div class="text-sm font-semibold text-white truncate">
               {{ userDisplayName }}
             </div>
@@ -32,25 +64,28 @@
           </div>
         </div>
         <div
-          class="mt-3 flex items-center gap-2 bg-amber/15 rounded-lg px-3 py-1.5"
+          class="mt-3 flex items-center gap-2 bg-amber/15 rounded-lg px-3 py-1.5 badge"
         >
           <span class="text-xs text-amber font-semibold">📦 Donor Account</span>
         </div>
       </div>
 
       <!-- Navigation Menu -->
-      <nav class="flex-1 px-3 mt-4 space-y-1">
+      <nav class="flex-1 px-2 lg:px-3 mt-4 space-y-1">
         <div
           v-for="navItem in navigationItems"
           :key="navItem.id"
           class="nav-item"
           :class="{ active: currentPage === navItem.id }"
           @click="showPage(navItem.id)"
+          :title="navItem.label"
         >
-          <span>{{ navItem.icon }}</span> {{ navItem.label }}
+          <span class="nav-icon">{{ navItem.icon }}</span>
+          <span class="nav-label lg:inline hidden">{{ navItem.label }}</span>
+          <span class="dot lg:inline hidden"></span>
           <span
             v-if="navItem.badge"
-            class="ml-auto bg-amber/20 text-amber text-xs font-bold px-2 py-0.5 rounded-full"
+            class="lg:inline hidden ml-auto bg-amber/20 text-amber text-xs font-bold px-2 py-0.5 rounded-full"
           >
             {{ navItem.badge }}
           </span>
@@ -58,12 +93,14 @@
       </nav>
 
       <!-- Logout Button -->
-      <div class="px-3 pb-5 border-t border-white/5 pt-3">
+      <div class="px-2 lg:px-4 py-5 border-t border-white/5">
         <div
           class="nav-item text-red-400 hover:text-red-300 hover:bg-red-500/10"
           @click="handleLogout"
+          title="Log Out"
         >
-          <span>🚪</span> Log Out
+          <span class="nav-icon">🚪</span>
+          <span class="logout-text lg:inline hidden">Log Out</span>
         </div>
       </div>
     </aside>
@@ -71,42 +108,72 @@
     <!-- ══════════════════════════════════
          MAIN CONTENT
     ═══════════════════════════════════ -->
-    <main class="flex-1 overflow-y-auto">
+    <main
+      class="flex-1 overflow-y-auto lg:ml-0"
+      @click="mobileMenuOpen && toggleMobileMenu()"
+    >
+      <!-- Mobile Menu Overlay -->
+      <div
+        v-if="mobileMenuOpen"
+        @click.stop="toggleMobileMenu"
+        class="lg:hidden fixed inset-0 bg-gray-900/50 z-30"
+      ></div>
+
+      <!-- Mobile Menu Toggle Button -->
+      <button
+        v-if="!mobileMenuOpen"
+        @click.stop="toggleMobileMenu"
+        class="lg:hidden fixed top-4 left-4 z-40 p-2 bg-white/80 backdrop-blur-sm rounded-lg shadow-md text-dark"
+      >
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          ></path>
+        </svg>
+      </button>
       <!-- Dashboard Page -->
-      <div v-if="currentPage === 'dashboard'" class="p-8">
-        <div class="flex items-start justify-between mb-8">
+      <div v-if="currentPage === 'dashboard'" class="p-4 md:p-6 lg:p-8">
+        <div
+          class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8"
+        >
           <div>
             <p
               class="text-xs font-semibold tracking-[3px] uppercase text-muted mb-1"
             >
               Donor Dashboard
             </p>
-            <h1 class="font-fraunces text-3xl font-bold text-dark">
+            <h1 class="font-fraunces text-2xl md:text-3xl font-bold text-dark">
               Good morning, {{ userDisplayName }} 👋
             </h1>
             <p class="text-sm text-gray-500 mt-1">
               You have
-              <span class="text-amber font-semibold"
-                >{{ newRequestsCount }} new requests</span
-              >
+              <span class="text-amber font-semibold">0 new requests</span>
               waiting for your response.
             </p>
           </div>
           <button
-            @click="showPage('list')"
-            class="bg-amber text-dark px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-amber-lt transition-colors flex items-center gap-2"
+            class="bg-amber text-dark px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-amber-lt transition-colors flex items-center gap-2 w-full sm:w-auto"
           >
             ➕ List New Item
           </button>
         </div>
 
         <!-- Stats Grid -->
-        <div class="grid grid-cols-4 gap-5 mb-8">
+        <div
+          class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 mb-8"
+        >
           <div
             v-for="stat in dashboardStats"
             :key="stat.id"
             class="bg-white rounded-2xl p-5 border border-teal/8"
-            :class="stat.bgClass"
           >
             <div class="text-2xl mb-2">{{ stat.icon }}</div>
             <div class="font-fraunces text-3xl font-bold text-dark">
@@ -119,7 +186,7 @@
         </div>
 
         <!-- Two Column Layout: Pending Requests + My Listings -->
-        <div class="grid grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
           <!-- Pending Requests Section -->
           <div class="bg-white rounded-2xl p-6 border border-teal/8">
             <div class="flex items-center justify-between mb-5">
@@ -128,46 +195,44 @@
               </h3>
               <span
                 class="text-xs text-amber font-semibold cursor-pointer hover:underline"
-                @click="showPage('requests')"
+                >See all →</span
               >
-                See all →
-              </span>
-            </div>
-            <div class="space-y-3">
-              <div
-                v-for="request in pendingRequests"
-                :key="request.id"
-                class="flex items-start gap-3 p-3 rounded-xl bg-amber-pale border border-amber/15"
-              >
+              <div class="space-y-3">
                 <div
-                  class="w-10 h-10 rounded-xl bg-amber/20 flex items-center justify-center text-xl flex-shrink-0"
+                  v-for="request in pendingRequests"
+                  :key="request.id"
+                  class="flex items-start gap-3 p-3 rounded-xl bg-amber-pale border border-amber/15"
                 >
-                  {{ request.icon }}
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-sm font-semibold text-dark">
-                    {{ request.name }}
-                  </p>
-                  <p class="text-xs text-gray-500 mt-0.5 truncate">
-                    Requesting: {{ request.item }}
-                  </p>
-                  <p class="text-xs text-muted mt-0.5">
-                    📍 {{ request.distance }} · {{ request.time }}
-                  </p>
-                </div>
-                <div class="flex flex-col gap-1.5 flex-shrink-0">
-                  <button
-                    @click="approveRequest(request)"
-                    class="bg-teal text-white text-xs px-3 py-1.5 rounded-lg font-semibold hover:bg-teal-mid transition-colors"
+                  <div
+                    class="w-10 h-10 rounded-xl bg-amber/20 flex items-center justify-center text-xl flex-shrink-0"
                   >
-                    Approve
-                  </button>
-                  <button
-                    @click="declineRequest(request)"
-                    class="bg-gray-100 text-gray-500 text-xs px-3 py-1.5 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-                  >
-                    Decline
-                  </button>
+                    {{ request.icon }}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-dark">
+                      {{ request.name }}
+                    </p>
+                    <p class="text-xs text-gray-500 mt-0.5 truncate">
+                      Requesting: {{ request.item }}
+                    </p>
+                    <p class="text-xs text-muted mt-0.5">
+                      📍 {{ request.distance }} · {{ request.time }}
+                    </p>
+                  </div>
+                  <div class="flex flex-col gap-1.5 flex-shrink-0">
+                    <button
+                      @click="approveRequest(request)"
+                      class="bg-teal text-white text-xs px-3 py-1.5 rounded-lg font-semibold hover:bg-teal-mid transition-colors"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      @click="declineRequest(request)"
+                      class="bg-gray-100 text-gray-500 text-xs px-3 py-1.5 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                    >
+                      Decline
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -222,7 +287,7 @@
                 radial-gradient(circle at 90% 20%, #d4820a, transparent 45%);
             "
           ></div>
-          <div class="relative z-10 flex items-center justify-between">
+          <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <p
                 class="text-xs font-semibold tracking-widest uppercase text-muted mb-2"
@@ -240,7 +305,7 @@
             </div>
             <button
               @click="showPage('impact')"
-              class="bg-amber text-dark px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-amber-lt transition-colors flex-shrink-0 ml-6"
+              class="bg-amber text-dark px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-amber-lt transition-colors flex-shrink-0 sm:ml-6"
             >
               View Full Impact →
             </button>
@@ -249,7 +314,7 @@
       </div>
 
       <!-- List Equipment Page -->
-      <div v-if="currentPage === 'list'" class="p-8">
+      <div v-if="currentPage === 'list'" class="p-4 sm:p-6 lg:p-8">
         <div class="mb-8">
           <p
             class="text-xs font-semibold tracking-[3px] uppercase text-muted mb-1"
@@ -266,7 +331,7 @@
         </div>
 
         <!-- Progress Indicator -->
-        <div class="flex items-center mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-0 mb-8">
           <div
             v-for="(step, index) in formSteps"
             :key="index"
@@ -278,10 +343,12 @@
           <div
             v-for="(line, index) in formSteps.slice(0, -1)"
             :key="`line-${index}`"
-            class="step-line"
+            class="step-line hidden sm:block"
             :class="getLineClass(index + 1)"
           ></div>
-          <div class="ml-auto flex gap-6 text-xs font-semibold">
+          <div
+            class="sm:ml-auto flex flex-wrap gap-x-6 gap-y-2 text-xs font-semibold"
+          >
             <span
               v-for="(step, index) in formSteps"
               :key="index"
@@ -293,7 +360,10 @@
         </div>
 
         <!-- Step 1: Item Details -->
-        <div v-if="currentFormStep === 1" class="grid grid-cols-2 gap-6">
+        <div
+          v-if="currentFormStep === 1"
+          class="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        >
           <!-- Item Information Card -->
           <div class="bg-white rounded-2xl p-6 border border-teal/8">
             <h3 class="font-fraunces text-lg font-bold text-dark mb-5">
@@ -361,7 +431,7 @@
               </div>
               <div>
                 <label class="ab-label">Pickup or Delivery</label>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <label
                     class="flex items-center gap-2 p-3 rounded-xl border-2 border-teal bg-teal-pale cursor-pointer"
                   >
@@ -435,7 +505,7 @@
         <div class="flex justify-end mt-6">
           <button
             @click="goToFormStep(2)"
-            class="bg-amber text-dark px-8 py-3 rounded-xl font-bold text-sm hover:bg-amber-lt transition-colors"
+            class="bg-amber text-dark px-8 py-3 rounded-xl font-bold text-sm hover:bg-amber-lt transition-colors w-full sm:w-auto"
           >
             Next: Add Photos →
           </button>
@@ -635,7 +705,7 @@
       </div>
 
       <!-- My Listings Page -->
-      <div v-if="currentPage === 'my-listings'" class="p-8">
+      <div v-if="currentPage === 'my-listings'" class="p-4 sm:p-6 lg:p-8">
         <div class="flex items-center justify-between mb-7">
           <div>
             <p
@@ -656,11 +726,13 @@
         </div>
 
         <!-- Filter Tabs -->
-        <div class="flex gap-2 mb-6">
+        <div
+          class="flex gap-2 mb-6 flex-wrap sm:flex-nowrap overflow-x-auto sm:overflow-visible -mx-1 px-1"
+        >
           <button
             v-for="filter in listingFilters"
             :key="filter.id"
-            class="px-4 py-2 rounded-xl text-xs font-bold"
+            class="px-4 py-2 rounded-xl text-xs font-bold flex-shrink-0"
             :class="
               filter.active
                 ? 'bg-dark text-white'
@@ -677,32 +749,45 @@
           <div
             v-for="listing in filteredListings"
             :key="listing.id"
-            class="listing-card bg-white rounded-2xl border border-teal/8 overflow-hidden"
+            class="listing-card bg-white rounded-2xl border border-teal/8 overflow-hidden flex flex-col sm:flex-row"
           >
-            <div class="flex">
-              <div
-                class="w-28 flex items-center justify-center text-5xl flex-shrink-0"
-                :style="`background:linear-gradient(135deg,${listing.bgFrom},${listing.bgTo})`"
-              >
-                {{ listing.icon }}
-              </div>
-              <div class="flex-1 p-5">
-                <div class="flex items-start justify-between mb-2">
-                  <div>
-                    <h4 class="font-fraunces text-lg font-bold text-dark">
-                      {{ listing.name }}
-                    </h4>
-                    <p class="text-xs text-muted">
-                      {{ listing.category }} · {{ listing.condition }} ·
-                      {{ listing.location }} · Listed {{ listing.listedTime }}
-                    </p>
-                  </div>
-                  <span class="pill pill-active">Active</span>
+            <!-- Icon Section -->
+            <div
+              class="w-full sm:w-28 h-32 sm:h-auto flex items-center justify-center text-4xl sm:text-5xl flex-shrink-0"
+              :style="`background:linear-gradient(135deg,${listing.bgFrom},${listing.bgTo})`"
+            >
+              {{ listing.icon }}
+            </div>
+
+            <!-- Content Section -->
+            <div class="flex-1 p-5 flex flex-col">
+              <!-- Header with title and status -->
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex-1 min-w-0">
+                  <h4
+                    class="font-fraunces text-lg font-bold text-dark truncate"
+                  >
+                    {{ listing.name }}
+                  </h4>
+                  <p class="text-xs text-muted mt-1">
+                    {{ listing.category }} · {{ listing.condition }} ·
+                    {{ listing.location }} · Listed {{ listing.listedTime }}
+                  </p>
                 </div>
-                <p class="text-sm text-gray-500 mb-4 leading-relaxed">
-                  {{ listing.description }}
-                </p>
-                <div class="flex items-center gap-4">
+                <span class="pill pill-active ml-3 flex-shrink-0">Active</span>
+              </div>
+
+              <!-- Description -->
+              <p class="text-sm text-gray-500 mb-4 leading-relaxed flex-1">
+                {{ listing.description }}
+              </p>
+
+              <!-- Footer with stats and actions -->
+              <div
+                class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mt-auto"
+              >
+                <!-- Stats -->
+                <div class="flex items-center gap-4 flex-wrap">
                   <div
                     class="flex items-center gap-1.5 text-xs text-amber font-semibold"
                   >
@@ -711,20 +796,22 @@
                   <div class="flex items-center gap-1.5 text-xs text-muted">
                     <span>👁️</span> {{ listing.views }} views
                   </div>
-                  <div class="ml-auto flex gap-2">
-                    <button
-                      @click="editListing(listing)"
-                      class="border border-gray-200 text-gray-500 text-xs px-3 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      @click="removeListing(listing)"
-                      class="border border-red-100 text-red-400 text-xs px-3 py-2 rounded-lg font-semibold hover:bg-red-50 transition-colors"
-                    >
-                      Remove
-                    </button>
-                  </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-2 ml-auto sm:ml-0">
+                  <button
+                    @click="editListing(listing)"
+                    class="border border-gray-200 text-gray-500 text-xs px-3 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    @click="removeListing(listing)"
+                    class="border border-red-100 text-red-400 text-xs px-3 py-2 rounded-lg font-semibold hover:bg-red-50 transition-colors"
+                  >
+                    Remove
+                  </button>
                 </div>
               </div>
             </div>
@@ -733,7 +820,7 @@
       </div>
 
       <!-- Incoming Requests Page -->
-      <div v-if="currentPage === 'requests'" class="p-8">
+      <div v-if="currentPage === 'requests'" class="p-4 sm:p-6 lg:p-8">
         <div class="mb-7">
           <p
             class="text-xs font-semibold tracking-[3px] uppercase text-muted mb-1"
@@ -773,16 +860,20 @@
               </span>
               <span class="pill pill-pending">Awaiting Response</span>
             </div>
-            <div class="p-6 flex gap-5">
+            <div class="p-6 flex flex-col sm:flex-row gap-5">
               <div
                 class="w-16 h-16 rounded-2xl bg-teal-pale flex items-center justify-center text-3xl flex-shrink-0"
               >
                 {{ request.userIcon }}
               </div>
-              <div class="flex-1">
-                <div class="flex items-start justify-between mb-3">
-                  <div>
-                    <h4 class="font-fraunces text-lg font-bold text-dark">
+              <div class="flex-1 min-w-0">
+                <div
+                  class="flex flex-col sm:flex-row sm:items-start justify-between mb-3 gap-3"
+                >
+                  <div class="flex-1 min-w-0">
+                    <h4
+                      class="font-fraunces text-lg font-bold text-dark truncate"
+                    >
                       {{ request.userName }}
                     </h4>
                     <p class="text-xs text-muted">
@@ -790,7 +881,7 @@
                       {{ request.location }}
                     </p>
                   </div>
-                  <div class="text-right">
+                  <div class="text-right flex-shrink-0">
                     <p class="text-xs text-muted">Requesting</p>
                     <p class="text-sm font-bold text-dark">
                       {{ request.icon }} {{ request.itemName }}
@@ -807,8 +898,10 @@
                     "{{ request.reason }}"
                   </p>
                 </div>
-                <div class="flex items-center gap-4">
-                  <div class="flex gap-4 text-xs text-muted">
+                <div
+                  class="flex flex-col sm:flex-row items-start sm:items-center gap-4"
+                >
+                  <div class="flex flex-wrap gap-4 text-xs text-muted">
                     <span>👤 Verified account</span>
                     <span
                       >📋 {{ request.requestCount
@@ -823,7 +916,7 @@
                     >
                     <span>🏠 {{ request.distance }} from you</span>
                   </div>
-                  <div class="ml-auto flex gap-3">
+                  <div class="flex gap-3 ml-auto sm:ml-0">
                     <button
                       @click="declineRequest(request)"
                       class="border border-gray-200 text-gray-500 px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-50 transition-colors"
@@ -873,7 +966,7 @@
       </div>
 
       <!-- Impact Page -->
-      <div v-if="currentPage === 'impact'" class="p-8">
+      <div v-if="currentPage === 'impact'" class="p-4 sm:p-6 lg:p-8">
         <div class="mb-8">
           <p
             class="text-xs font-semibold tracking-[3px] uppercase text-muted mb-1"
@@ -937,11 +1030,11 @@
       </div>
 
       <!-- Profile Page -->
-      <div v-if="currentPage === 'profile'" class="p-8">
+      <div v-if="currentPage === 'profile'" class="p-4 sm:p-6 lg:p-8">
         <div class="mb-7">
           <h1 class="font-fraunces text-3xl font-bold text-dark">My Profile</h1>
         </div>
-        <div class="grid grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="bg-white rounded-2xl p-6 border border-teal/8">
             <div class="flex items-center gap-4 mb-6">
               <div
@@ -960,13 +1053,15 @@
               <div
                 v-for="field in profileFields"
                 :key="field.key"
-                class="flex justify-between py-2 border-b border-gray-50"
+                class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 py-2 border-b border-gray-50"
               >
                 <span
                   class="text-xs text-muted font-semibold uppercase tracking-wide"
                   >{{ field.label }}</span
                 >
-                <span class="text-sm text-dark">{{ field.value }}</span>
+                <span class="text-sm text-dark sm:text-right break-words">{{
+                  field.value
+                }}</span>
               </div>
             </div>
             <button
@@ -1118,6 +1213,8 @@ const successModal = ref({
   message: "Action completed successfully.",
   buttonText: "Close",
 });
+// Mobile menu state
+const mobileMenuOpen = ref(false);
 // New item form data
 const newItem = ref({
   name: "",
@@ -1472,12 +1569,19 @@ const showPage = (pageId) => {
   if (pageId !== "list") {
     currentFormStep.value = 1;
   }
+  // Close mobile sidebar on navigation
+  mobileMenuOpen.value = false;
 };
 
 // Handle user logout
 const handleLogout = () => {
   authStore.logout();
   router.push("/auth");
+};
+
+// Toggle mobile menu
+const toggleMobileMenu = () => {
+  mobileMenuOpen.value = !mobileMenuOpen.value;
 };
 
 // Navigate to specific form step
@@ -1746,12 +1850,12 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 16px;
+  padding: 10px 12px;
   border-radius: 10px;
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
-  color: #7a9e96;
+  color: #aac5bf;
   transition: all 0.18s;
 }
 
@@ -1763,6 +1867,57 @@ onMounted(() => {
 .nav-item.active {
   background: rgba(212, 130, 10, 0.18);
   color: #d4820a;
+}
+
+/* Navigation Icon and Label */
+.nav-icon {
+  flex-shrink: 0;
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+.nav-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity 0.3s;
+}
+
+.dot {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background: #7a9e96;
+  border-radius: 50%;
+  margin: 0 8px;
+}
+
+/* Responsive Sidebar */
+@media (max-width: 1023px) {
+  .nav-label,
+  .user-profile-text,
+  .logout-text,
+  .badge,
+  .dot {
+    display: none;
+  }
+
+  .nav-item {
+    justify-content: center;
+    padding: 12px 4px;
+    gap: 0;
+  }
+
+  .nav-icon {
+    font-size: 16px;
+    width: auto;
+  }
+
+  /* Ensure sidebar is exactly 4rem (64px) on small screens */
+  aside {
+    width: 4rem !important;
+  }
 }
 
 /* Status Pills */
@@ -1943,10 +2098,19 @@ onMounted(() => {
 /* Card Hover Effects */
 .listing-card {
   transition: all 0.22s;
+  display: flex;
+  flex-direction: column;
 }
 
 .listing-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 28px rgba(26, 92, 82, 0.1);
+}
+
+/* Ensure consistent card heights */
+.listing-card > div:last-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 </style>

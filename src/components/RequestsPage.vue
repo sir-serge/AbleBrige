@@ -19,16 +19,16 @@
       <div
         v-for="request in requests"
         :key="request.id"
-        class="bg-white rounded-2xl p-4 md:p-5 border flex flex-col sm:flex-row gap-3 sm:gap-5 sm:items-center"
+        class="bg-white rounded-2xl p-4 md:p-5 border border-teal/8 flex flex-col sm:flex-row gap-4 sm:gap-5 items-start sm:items-center"
         :class="
           request.borderClass + ' ' + (request.opacity ? 'opacity-70' : '')
         "
       >
         <!-- Request Content Section -->
-        <div class="flex items-center gap-3 sm:gap-5 flex-1 min-w-0">
+        <div class="flex items-center gap-4 flex-1 min-w-0">
           <!-- Equipment Icon -->
           <div
-            class="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center text-xl md:text-2xl flex-shrink-0"
+            class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
             :class="request.iconClass"
           >
             {{ request.icon }}
@@ -37,11 +37,13 @@
           <!-- Request Details -->
           <div class="flex-1 min-w-0">
             <!-- Equipment name with truncate for long names -->
-            <p class="font-semibold text-dark text-sm md:text-base truncate">
+            <p
+              class="font-semibold text-dark text-sm md:text-base truncate mb-1"
+            >
               {{ request.name }}
             </p>
             <!-- Donor and location info -->
-            <p class="text-xs text-muted mt-0.5 truncate">
+            <p class="text-xs text-muted truncate">
               {{ request.donor }} · {{ request.location }}
             </p>
             <!-- Time information -->
@@ -51,15 +53,17 @@
 
         <!-- Status and Actions Section -->
         <div
-          class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 flex-shrink-0"
+          class="flex flex-col sm:flex-row items-start sm:items-center gap-3 flex-shrink-0"
         >
           <!-- Status Badge -->
-          <span class="pill self-start" :class="request.pillClass">{{
-            request.status
-          }}</span>
+          <span
+            class="pill self-start sm:self-auto"
+            :class="request.pillClass"
+            >{{ request.status }}</span
+          >
 
           <!-- Action Buttons Container -->
-          <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 flex-shrink-0">
+          <div class="flex flex-col sm:flex-row gap-2 flex-shrink-0">
             <!-- Alternative Action Button (if available) -->
             <button
               v-if="request.altAction"

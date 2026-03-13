@@ -61,24 +61,26 @@
     </div>
 
     <!-- Equipment Grid - Display available equipment items -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5"
+    >
       <!-- Dynamic equipment cards loop -->
       <div
         v-for="item in filteredItems"
         :key="item.id"
-        class="eq-card bg-white rounded-2xl overflow-hidden border border-teal/8"
+        class="eq-card bg-white rounded-2xl overflow-hidden border border-teal/8 flex flex-col h-full"
         @click="$emit('open-modal', item)"
       >
         <!-- Equipment Icon Section -->
         <div
-          class="h-32 md:h-40 flex items-center justify-center text-4xl md:text-6xl"
+          class="h-32 md:h-40 flex items-center justify-center text-4xl md:text-6xl flex-shrink-0"
           :class="item.bgClass"
         >
           {{ item.icon }}
         </div>
 
         <!-- Equipment Details Section -->
-        <div class="p-4 md:p-5">
+        <div class="p-4 md:p-5 flex-1 flex flex-col">
           <!-- Category and Condition Row -->
           <div class="flex items-center gap-2 mb-2">
             <!-- Category Badge -->
@@ -99,12 +101,12 @@
           </h4>
 
           <!-- Equipment description with line clamp for long text -->
-          <p class="text-xs text-gray-500 mb-3 line-clamp-2">
+          <p class="text-xs text-gray-500 mb-3 line-clamp-2 flex-1">
             {{ item.description }}
           </p>
 
           <!-- Bottom row: Condition badge and Request button -->
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between mt-auto">
             <!-- Condition Badge -->
             <span
               class="px-2 md:px-3 py-1 text-xs font-semibold rounded-full"
@@ -114,7 +116,7 @@
 
             <!-- Request Button -->
             <button
-              class="bg-teal text-white text-xs px-3 md:px-4 py-2 rounded-lg font-semibold hover:bg-teal-mid transition-colors"
+              class="bg-teal text-white text-xs px-3 md:px-4 py-2 rounded-lg font-semibold hover:bg-teal-mid transition-colors flex-shrink-0"
               @click.stop="$emit('open-modal', item)"
             >
               Request
@@ -252,11 +254,21 @@ const setActiveCategory = (cat) => {
 .eq-card {
   transition: all 0.22s;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 /* Hover state for equipment cards - lift effect with shadow */
 .eq-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 12px 36px rgba(26, 92, 82, 0.13);
+}
+
+/* Ensure consistent card heights in grid */
+.eq-card > div:last-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 </style>
