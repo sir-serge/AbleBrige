@@ -223,7 +223,10 @@ const authStore = useAuthStore();
 
 const handleBrowseClick = () => {
   if (authStore.isAuthenticated) {
-    router.push("/dashboard");
+    const role = authStore.user?.role;
+    if (role === "donor") router.push("/donor-dashboard");
+    else if (role === "recipient") router.push("/recipient-dashboard");
+    else router.push("/role-selection");
   } else {
     router.push("/role-selection");
   }
@@ -231,7 +234,10 @@ const handleBrowseClick = () => {
 
 const handleDonateClick = () => {
   if (authStore.isAuthenticated) {
-    router.push("/dashboard");
+    const role = authStore.user?.role;
+    if (role === "donor") router.push("/donor-dashboard");
+    else if (role === "recipient") router.push("/recipient-dashboard");
+    else router.push("/role-selection");
   } else {
     router.push("/role-selection");
   }

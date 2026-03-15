@@ -5,7 +5,6 @@ import { useAuthStore } from "../stores/auth.js";
 import Problem from "../views/Problem.vue";
 import RoleSelection from "../views/RoleSelection.vue";
 import Auth from "../views/Auth.vue";
-import Dashboard from "../views/Dashboard.vue";
 import DonorDashboard from "../views/DonorDashboard.vue";
 import RecipientDashboard from "../views/RecipientDashboard.vue";
 
@@ -15,7 +14,11 @@ const routes = [
     path: "/",
     redirect: () => {
       const authStore = useAuthStore();
-      return authStore.isAuthenticated ? "/dashboard" : "/problem";
+      if (!authStore.isAuthenticated) return "/problem";
+      const role = authStore.user?.role;
+      if (role === "donor") return "/donor-dashboard";
+      if (role === "recipient") return "/recipient-dashboard";
+      return "/role-selection";
     },
   },
   { path: "/problem", name: "Problem", component: Problem },
@@ -27,12 +30,6 @@ const routes = [
     props: (route) => ({
       role: route.query.role || "donor", // Default to donor if no role specified
     }),
-  },
-  {
-    path: "/dashboard",
-    name: "Dashboard",
-    component: Dashboard,
-    meta: { requiresAuth: true },
   },
   {
     path: "/donor-dashboard",
@@ -81,7 +78,7 @@ router.beforeEach((to, from, next) => {
     } else if (userRole === "recipient") {
       next("/recipient-dashboard");
     } else {
-      next("/dashboard"); // Fallback to generic dashboard
+      next("/role-selection");
     }
   } else {
     // Otherwise proceed to requested route
